@@ -1,18 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Header/Navbar';
 import Footer from '../components/Footer';
 
 const AlbumPage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const albums = [
-    { id: 1, title: 'Vacation Memories', images: ['/images/sample1.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg'] },
-    { id: 2, title: 'Family Reunion', images: ['/images/sample3.jpg', '/images/sample1.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg'] },
+    {
+      id: 1,
+      title: 'Vacation Memories',
+      images: ['/images/sample1.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg'],
+    },
+    {
+      id: 2,
+      title: 'Family Reunion',
+      images: ['/images/sample3.jpg', '/images/sample1.jpg', '/images/sample2.jpg', '/images/sample3.jpg'],
+    },
   ];
 
-  const album = albums.find((a) => a.id === parseInt(id)); 
+  const album = albums.find((a) => a.id === parseInt(id));
   const albumTitle = album?.title || 'Album Not Found';
   const albumImages = album?.images || [];
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const openModal = (index) => {
+    setCurrentImageIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const showPrevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? albumImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const showNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === albumImages.length - 1 ? 0 : prevIndex + 1
+    );
+  };
 
   return (
     <>
@@ -28,6 +60,7 @@ const AlbumPage = () => {
               <div
                 key={index}
                 className="relative group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                onClick={() => openModal(index)}
               >
                 <img
                   src={image}
@@ -42,6 +75,38 @@ const AlbumPage = () => {
           </div>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+          <div className="relative max-w-4xl w-full mx-6">
+            <img
+              src={albumImages[currentImageIndex]}
+              alt="Current"
+              className="object-contain w-full h-[80vh] rounded-lg"
+            />
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-white text-2xl font-bold p-2 rounded-full hover:bg-black hover:bg-opacity-50 transition"
+            >
+              ✕
+            </button>
+            <button
+              onClick={showPrevImage}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white p-3 rounded-full hover:bg-black hover:bg-opacity-50 transition"
+            >
+              ‹
+            </button>
+            <button
+              onClick={showNextImage}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white p-3 rounded-full hover:bg-black hover:bg-opacity-50 transition"
+            >
+              ›
+            </button>
+          </div>
+        </div>
+      )}
+
+
       <Footer />
     </>
   );
