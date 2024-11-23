@@ -1,8 +1,9 @@
 import React from 'react';
 import Navbar from '../components/Header/Navbar';
 import SearchAndCreate from '../components/Dashboard/SearchAndCreate';
+import FilterList from '../components/Dashboard/FilterList';
 import AlbumCard from '../components/Albums/AlbumCard';
-import Footer from '../components/Footer'; 
+import Footer from '../components/Footer';
 
 const Dashboard = () => {
   const albums = [
@@ -20,16 +21,20 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-gray-100 min-h-screen pt-10 p-6 overflow-auto">
-        <SearchAndCreate />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-          {albums.map((album) => (
-            <AlbumCard key={album.id} album={album} />
-          ))}
+      <div
+        className="pt-20 bg-gray-100 min-h-screen overflow-auto"
+        style={{ backgroundColor: '#f5f7fa' }}
+      >
+        <div className="px-6 space-y-6">
+          <SearchAndCreate />
+          <FilterList />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {albums.map((album) => (
+              <AlbumCard key={album.id} album={album} />
+            ))}
+          </div>
         </div>
       </div>
-
       <Footer />
     </>
   );

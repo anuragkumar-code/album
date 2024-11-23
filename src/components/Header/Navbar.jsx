@@ -11,7 +11,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
+    <nav className="bg-white text-black p-4 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md border-b border-black">
       <div className="text-2xl font-bold">Digital Album</div>
 
       <Menu />
@@ -19,15 +19,15 @@ const Navbar = () => {
       <div className="relative">
         <FontAwesomeIcon
           icon={faUser}
-          className="w-6 h-6 text-white rounded-full bg-gray-700 p-2 cursor-pointer"
+          className="w-6 h-6 text-black rounded-full bg-gray-200 p-2 cursor-pointer hover:bg-gray-300 transition"
           onClick={toggleDropdown}
         />
         {isDropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg p-2">
-            <a href="#" className="block px-4 py-2 hover:bg-gray-200">
+            <a href="#" className="block px-4 py-2 hover:bg-gray-100">
               Profile
             </a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-200">
+            <a href="#" className="block px-4 py-2 hover:bg-gray-100">
               Logout
             </a>
           </div>
