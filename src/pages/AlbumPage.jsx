@@ -1,29 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Header/Navbar';
 import Footer from '../components/Footer';
+import SkeletonImage from '../components/Skeletons/SkeletonImage'; 
 
 const AlbumPage = () => {
   const { id } = useParams();
-  const albums = [
+
+  const allAlbumData = [
     {
       id: 1,
       title: 'Vacation Memories',
-      images: ['/images/sample1.jpg', '/images/sample2.jpg', '/images/sample2.jpg', '/images/sample2.jpg'],
+      images: Array.from({ length: 20 }, (_, i) => `/images/sample${i + 1}.jpg`),
     },
     {
       id: 2,
       title: 'Family Reunion',
-      images: ['/images/sample3.jpg', '/images/sample1.jpg', '/images/sample2.jpg', '/images/sample3.jpg'],
+      images: Array.from({ length: 15 }, (_, i) => `/images/sample${i + 1}.jpg`),
     },
   ];
 
-  const album = albums.find((a) => a.id === parseInt(id));
+  const album = allAlbumData.find((a) => a.id === parseInt(id));
   const albumTitle = album?.title || 'Album Not Found';
-  const albumImages = album?.images || [];
+  const allAlbumImages = album?.images || [];
+
+  const [displayedImages, setDisplayedImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const itemsPerPage = 6;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const loadImages = () => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    setTimeout(() => {
+      const newImages = allAlbumImages.slice(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage
+      );
+      setDisplayedImages((prevImages) => [...prevImages, ...newImages]);
+      setPage((prevPage) => prevPage + 1);
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  useEffect(() => {
+    loadImages();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 100
+      ) {
+        loadImages();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLoading, page]);
 
   const openModal = (index) => {
     setCurrentImageIndex(index);
@@ -36,13 +76,13 @@ const AlbumPage = () => {
 
   const showPrevImage = () => {
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? albumImages.length - 1 : prevIndex - 1
+      prevIndex === 0 ? displayedImages.length - 1 : prevIndex - 1
     );
   };
 
   const showNextImage = () => {
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === albumImages.length - 1 ? 0 : prevIndex + 1
+      prevIndex === displayedImages.length - 1 ? 0 : prevIndex + 1
     );
   };
 
@@ -56,7 +96,7 @@ const AlbumPage = () => {
         <div className="px-6 py-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">{albumTitle}</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {albumImages.map((image, index) => (
+            {displayedImages.map((image, index) => (
               <div
                 key={index}
                 className="relative group rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
@@ -72,7 +112,16 @@ const AlbumPage = () => {
                 </div>
               </div>
             ))}
+
+            {isLoading &&
+              Array.from({ length: itemsPerPage }).map((_, index) => (
+                <SkeletonImage key={index} />
+              ))}
           </div>
+
+          {!isLoading && displayedImages.length >= allAlbumImages.length && (
+            <p className="text-center py-4 text-gray-600">No more images to load</p>
+          )}
         </div>
       </div>
 
@@ -80,7 +129,7 @@ const AlbumPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
           <div className="relative max-w-4xl w-full mx-6">
             <img
-              src={albumImages[currentImageIndex]}
+              src={displayedImages[currentImageIndex]}
               alt="Current"
               className="object-contain w-full h-[80vh] rounded-lg"
             />
@@ -105,7 +154,6 @@ const AlbumPage = () => {
           </div>
         </div>
       )}
-
 
       <Footer />
     </>
