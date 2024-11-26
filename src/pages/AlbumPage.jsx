@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Header/Navbar';
+import SearchAndCreate from '../components/AlbumPage/SearchAndCreate';
+import FilterList from '../components/AlbumPage/FilterList';
 import Footer from '../components/Footer';
-import SkeletonImage from '../components/Skeletons/SkeletonImage'; 
+import SkeletonImage from '../components/Skeletons/SkeletonImage';
 
 const AlbumPage = () => {
   const { id } = useParams();
@@ -93,7 +95,10 @@ const AlbumPage = () => {
         className="pt-20 bg-gray-100 min-h-screen overflow-auto"
         style={{ backgroundColor: '#f5f7fa' }}
       >
-        <div className="px-6 py-6">
+        <div className="px-6 space-y-6">
+          <SearchAndCreate />
+          <FilterList />
+
           <h1 className="text-3xl font-bold text-gray-800 mb-4">{albumTitle}</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {displayedImages.map((image, index) => (
