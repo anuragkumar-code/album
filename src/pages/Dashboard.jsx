@@ -40,7 +40,7 @@ const Dashboard = () => {
       setAlbums((prevAlbums) => [...prevAlbums, ...newAlbums]);
       setPage((prevPage) => prevPage + 1);
       setIsLoading(false);
-    }, 1000);
+    }, 3000);
   };
 
   useEffect(() => {
