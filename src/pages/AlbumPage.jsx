@@ -5,6 +5,7 @@ import SearchAndCreate from '../components/AlbumPage/SearchAndCreate';
 import FilterList from '../components/AlbumPage/FilterList';
 import Footer from '../components/Footer';
 import SkeletonImage from '../components/Skeletons/SkeletonImage';
+import ImageUploadModal from '../components/AlbumPage/ImageUploadModal'; 
 
 const AlbumPage = () => {
   const { id } = useParams();
@@ -33,6 +34,10 @@ const AlbumPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false); 
+  const [newImages, setNewImages] = useState([]); 
+
 
   const loadImages = () => {
     if (isLoading) return;
@@ -88,6 +93,20 @@ const AlbumPage = () => {
     );
   };
 
+  const openUploadModal = () => {
+    setIsUploadModalOpen(true);
+  };
+
+  const closeUploadModal = () => {
+    setIsUploadModalOpen(false);
+  };
+
+  const handleUpload = (images) => {
+    console.log('Uploading images:', images);
+    setNewImages(images);
+  };
+
+
   return (
     <>
       <Navbar />
@@ -96,7 +115,7 @@ const AlbumPage = () => {
         style={{ backgroundColor: '#f5f7fa' }}
       >
         <div className="px-6 space-y-6">
-          <SearchAndCreate />
+          <SearchAndCreate openModal={openUploadModal} />
           <FilterList />
 
           <h1 className="text-3xl font-bold text-gray-800 mb-4">{albumTitle}</h1>
@@ -161,6 +180,12 @@ const AlbumPage = () => {
       )}
 
       <Footer />
+
+      <ImageUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={closeUploadModal}
+        onUpload={handleUpload}
+      />
     </>
   );
 };

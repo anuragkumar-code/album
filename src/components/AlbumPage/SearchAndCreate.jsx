@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SearchAndCreate = () => {
+const SearchAndCreate = ({ openModal }) => {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-center rounded-lg mt-6 space-y-4 sm:space-y-0">
       <div className="w-full sm:w-1/5 relative">
@@ -16,7 +16,7 @@ const SearchAndCreate = () => {
       </div>
       <button
         className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-2 rounded-lg shadow hover:from-blue-600 hover:to-blue-800 active:scale-95 transition font-semibold text-sm"
-        onClick={() => console.log('Navigate to Create Album')}
+        onClick={openModal} 
       >
         + Photo
       </button>
