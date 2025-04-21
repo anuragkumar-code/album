@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/authService';
 
 const LoginForm = ({ toggleAuthMode }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -30,14 +33,22 @@ const LoginForm = ({ toggleAuthMode }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log('Login successful:', formData);
-      alert('Login Successful!');
+    if (!validateForm()) return;
+  
+    try {
+      const data = await loginUser(formData);
+      localStorage.setItem('token', data.token);
+      navigate('/dashboard');
+      // alert('Login Successful!');
+      console.log('User:', data.user);
+      // Redirect or update app state here
+    } catch (err) {
+      setErrors({ api: err.message });
     }
   };
-
+  
   return (
     <div className="max-w-md w-full mx-auto">
       <h3 className="text-3xl font-bold text-gray-800 text-center mb-6">Sign In</h3>
