@@ -28,9 +28,28 @@ const RegistrationForm = ({ toggleAuthMode }) => {
       const newErrors = {};
 
       if (!formData.firstName) newErrors.firstName = 'First name is required';
+
       if (!formData.surname) newErrors.surname = 'Surname is required';
+
       if (!formData.dobDay || !formData.dobMonth || !formData.dobYear) {
         newErrors.dob = 'Complete date of birth is required';
+      } else {
+        const day = parseInt(formData.dobDay);
+        const month = months.indexOf(formData.dobMonth); 
+        const year = parseInt(formData.dobYear);
+        
+        const isValidDate = (d, m, y) => {
+          const date = new Date(y, m, d);
+          return (
+            date.getFullYear() === y &&
+            date.getMonth() === m &&
+            date.getDate() === d
+          );
+        };
+      
+        if (!isValidDate(day, month, year)) {
+          newErrors.dob = 'Invalid date of birth';
+        }
       }
         
       if (!formData.gender) newErrors.gender = 'Gender is required';
@@ -50,7 +69,7 @@ const RegistrationForm = ({ toggleAuthMode }) => {
       if (!formData.password) {
         newErrors.password = 'Password is required';
       } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Passwords do not match';
+        newErrors.confirmPassword = 'Password do not match';
       }
 
       setErrors(newErrors);
@@ -63,13 +82,66 @@ const RegistrationForm = ({ toggleAuthMode }) => {
       setFormData((prev) => ({ ...prev, [name]: value }));
     };
     
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
-      if (validateForm()) {
-        console.log('Form submitted:', formData);
-        alert('Registration Successful!');
+    
+      if (!validateForm()) return;
+    
+      const payload = {
+        firstName: formData.firstName,
+        surname: formData.surname,
+        dobDay: formData.dobDay,
+        dobMonth: formData.dobMonth,
+        dobYear: formData.dobYear,
+        gender: formData.gender,
+        mobile: formData.mobile,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.password,
+      };
+    
+      try {
+        const res = await fetch('http://localhost:4000/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+    
+        const data = await res.json();
+    
+        if (!res.ok) {
+          if (data.errors) {
+            const serverErrors = {};
+            for (const key in data.errors) {
+              serverErrors[key] = data.errors[key][0];
+            }
+            setErrors(serverErrors);
+          } else {
+            alert(data.message || 'Registration failed');
+          }
+        } else {
+          alert('Registration successful!');
+          setFormData({
+            firstName: '',
+            surname: '',
+            dobDay: '',
+            dobMonth: '',
+            dobYear: '',
+            gender: '',
+            mobile: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+          });
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        alert('Something went wrong. Please try again later.');
       }
     };
+    
 
   return (
     <div className="max-w-md w-full mx-auto">
