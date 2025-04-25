@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Header/Navbar';
 import Footer from '../components/Footer';
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { createAlbum } from '../services/albumService';
+
 const CreateAlbumPage = () => {
+  const navigate = useNavigate();
+
   const [albumDetails, setAlbumDetails] = useState({
     name: '',
     date: new Date().toISOString().split('T')[0], 
@@ -14,6 +22,8 @@ const CreateAlbumPage = () => {
     location: '',
     commentsEnabled: false,
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -39,10 +49,33 @@ const CreateAlbumPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Album Details:', albumDetails);
-    alert('Album created successfully!');
+
+    if (!albumDetails.name || !albumDetails.description || !albumDetails.coverPhoto) {
+      toast.error('Please fill all required fields.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      for (const key in albumDetails) {
+        formData.append(key, albumDetails[key]);
+      }
+
+      const response = await createAlbum(formData);
+      toast.success('Album created successfully! 🎉');
+
+      setTimeout(() => {
+        navigate('/albums'); 
+      }, 1500);
+    } catch (error) {
+      console.error('Error creating album:', error);
+      toast.error('Failed to create album. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
